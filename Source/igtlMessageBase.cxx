@@ -33,6 +33,7 @@ MessageBase::MessageBase():
 
   m_IsHeaderUnpacked = 0;
   m_IsBodyUnpacked   = 0;
+  m_IsPacked         = 0;
 
   m_BodyType         = "";
   m_DefaultBodyType  = "";
@@ -128,6 +129,7 @@ int MessageBase::Pack()
   igtl_header_convert_byte_order(h);
 
   m_IsHeaderUnpacked = 0;
+  m_IsPacked         = 1;
 
   return 1;
 }

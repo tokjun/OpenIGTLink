@@ -149,7 +149,18 @@ public:
   /// GetBodySizeToRead() returns the size of the body to be read. This function must be called
   /// after the message header is set.
   int GetBodySizeToRead()                       { return m_BodySizeToRead; };
-  
+
+  /// DataModified() must be called whenever message data are modified.
+  /// This will reset IsPacked flag and triggers Pack() call in igtl::Socket::Send(const igtl::MessageBase*)
+  void DataModified() { m_IsPacked = 0; };
+
+  /// IsPacked() returns the packing (serialization) status. If the message has not been packed,
+  /// the function returns 0. Otherwise it returns 1. Developers must make sure to have IsPacked()==1
+  /// before calling igtl::Socket::Send(const void* data, int length). 
+  /// Contrarily, igtl::Socket::Send(const igtl::MessageBase*) automatically make sure
+  /// to pack the message using IsPacked() before sending. 
+  int IsPacked() { return m_IsPacked; };
+
 protected:
   MessageBase();
   ~MessageBase();
@@ -209,10 +220,16 @@ protected:
   unsigned int   m_TimeStampSecFraction;
 
   /// Unpacking (desrialization) status for the header (0: --   1: unpacked).
+  /// Used for receiving messages
   int            m_IsHeaderUnpacked;
 
   /// Unpacking (desrialization) status for the body (0: --   1: unpacked).
+  /// Used for receiving messages
   int            m_IsBodyUnpacked;
+
+  /// Packing status (0: not yet   1: packed)
+  /// Used for sending messages
+  int            m_Packed;
 
 };
 

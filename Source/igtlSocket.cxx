@@ -334,6 +334,21 @@ int Socket::Send(const void* data, int length)
   return 1;
 }
 
+
+//-----------------------------------------------------------------------------
+int Socket::Send(const MessageBase* message)
+{
+  if (message && message->IsNotNull())
+    {
+    return this->Send(message->GetPackPointer(), message->GetPackSize());
+    }
+  else
+    {
+    return 0;
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 int Socket::Receive(void* data, int length, int readFully/*=1*/)
 {

@@ -44,6 +44,7 @@
 #include "igtlObjectFactory.h"
 #include "igtlMacro.h"
 #include "igtlWin32Header.h"
+#include "igtlMessageBase.h"
 
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -85,6 +86,11 @@ public:
   /// SIGPIPE or other signal may be raised on systems (e.g., Sun Solaris) where
   /// MSG_NOSIGNAL flag is not supported for the socket send method.
   int Send(const void* data, int length);
+
+  /// Utility method to send data over the socket.
+  /// This function calls Send(const void* data, int length) based on the pointer
+  /// and the length of the packed data in the specified MessageBase class.
+  int Send(const MessageBase* message);
 
   /// Receive data from the socket.
   /// This call blocks until some data is read from the socket, unless timeout is set
