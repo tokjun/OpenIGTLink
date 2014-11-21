@@ -266,7 +266,7 @@ int TrackingDataMessage::UnpackBody()
       }
     elemClass->SetMatrix(matrix);
 
-    this->m_TrackingDataList.push_back(dynamic_cast<TrackingDataElement *>(elemClass.GetPointer()));
+    this->m_TrackingDataList.push_back(dynamic_cast<TrackingDataElementBase *>(elemClass.GetPointer()));
 
     element ++;
     }

@@ -32,7 +32,7 @@ class IGTLCommon_EXPORT TrackingDataElement: public TrackingDataElementBase
 {
 public:
   typedef TrackingDataElement            Self;
-  typedef Object                         Superclass;
+  typedef TrackingDataElementBase        Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
@@ -71,6 +71,7 @@ public:
   /// Gets the quaternion. The function substitutes the elements of the quaternion in 'qx', 'qy', 'qz' and 'qw'.
   virtual void GetQuaternion(float* qx, float* qy, float* qz, float* w);
 
+  /// Inialize the rotation / translation
   virtual void Identity();
 
 protected:
@@ -90,7 +91,7 @@ class IGTLCommon_EXPORT StartTrackingDataMessage: public StartTrackingDataMessag
 
 public:
   typedef StartTrackingDataMessage       Self;
-  typedef MessageBase                    Superclass;
+  typedef StartTrackingDataMessageBase   Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
@@ -109,18 +110,17 @@ class IGTLCommon_EXPORT StopTrackingDataMessage: public StopTrackingDataMessageB
 {
 public:
   typedef StopTrackingDataMessage        Self;
-  typedef MessageBase                    Superclass;
+  typedef StopTrackingDataMessageBase    Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::StopTrackingDataMessage);
+  igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::StopTrackingDataMessageBase);
   igtlNewMacro(igtl::StopTrackingDataMessage);
 
 protected:
   StopTrackingDataMessage() : StopTrackingDataMessageBase() { this->m_DefaultBodyType  = "STP_TDATA"; };
   ~StopTrackingDataMessage() {};
 
-protected:
 };
 
 
@@ -129,7 +129,7 @@ class IGTLCommon_EXPORT RTSTrackingDataMessage: public RTSTrackingDataMessageBas
 {
 public:
   typedef RTSTrackingDataMessage         Self;
-  typedef MessageBase                    Superclass;
+  typedef RTSTrackingDataMessageBase     Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
@@ -184,9 +184,6 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
 
-  /// The list of trakcing data elements.  
-  //std::vector<TrackingDataElement::Pointer> m_TrackingDataList;
-  
 };
 
 
