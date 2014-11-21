@@ -30,50 +30,6 @@ namespace igtl {
 //----------------------------------------------------------------------
 // igtl::TrackingDataElement class
 
-TrackingDataElement::TrackingDataElement() : Object()
-{
-  this->m_Name = "";
-  this->m_Type = TYPE_TRACKER;
-  IdentityMatrix(this->m_Matrix);
-}
-
-
-TrackingDataElement::~TrackingDataElement()
-{
-}
-
-
-int TrackingDataElement::SetName(const char* name)
-{
-  if (strlen(name) <= IGTL_TDATA_LEN_NAME)
-    {
-    this->m_Name = name;
-    return 1;
-    }
-  else
-    {
-    return 0;
-    }
-}
-
-
-int TrackingDataElement::SetType(igtlUint8 type)
-{
-  if(type == TYPE_TRACKER ||
-     type == TYPE_6D ||
-     type == TYPE_3D ||
-     type == TYPE_5D)
-    {
-    this->m_Type = type;
-    return type;
-    }
-  else
-    {
-    return 0;
-    }
-}
-
-
 void TrackingDataElement::SetPosition(float p[3])
 {
   this->m_Matrix[0][3] = p[0];
@@ -154,154 +110,87 @@ void TrackingDataElement::GetMatrix(Matrix4x4& mat)
 }
 
 
-//----------------------------------------------------------------------
-// igtl::StartTrackingDataMessage class
-
-StartTrackingDataMessage::StartTrackingDataMessage():
-  MessageBase()
+void TrackingDataElement::SetQuaternion(float q[4])
 {
-  this->m_DefaultBodyType = "STT_TDATA";
-  this->m_Resolution      = 0;
-  this->m_CoordinateName  = "";
+  float t[4];
+
+  // Store translation part
+  t[0] = m_Matrix[0][3];
+  t[1] = m_Matrix[1][3];
+  t[2] = m_Matrix[2][3];
+  t[3] = m_Matrix[3][3];
+
+  igtl::QuaternionToMatrix(q, m_Matrix);
+
+  // Load translation part
+  m_Matrix[0][3] = t[0];
+  m_Matrix[1][3] = t[1];
+  m_Matrix[2][3] = t[2];
+  m_Matrix[3][3] = t[3];
 }
 
 
-StartTrackingDataMessage::~StartTrackingDataMessage()
+void TrackingDataElement::GetQuaternion(float q[4])
 {
+  igtl::MatrixToQuaternion(m_Matrix, q);
 }
 
 
-int StartTrackingDataMessage::SetCoordinateName(const char* name)
+void TrackingDataElement::SetQuaternion(float qx, float qy, float qz, float w)
 {
-  if (strlen(name) <= IGTL_STT_TDATA_LEN_COORDNAME)
-    {
-    this->m_CoordinateName = name;
-    return 1;
-    }
-  else
-    {
-    return 0;
-    }
+  float q[4];
+
+  q[0] = qx;
+  q[1] = qy;
+  q[2] = qz;
+  q[3] = w;
+  SetQuaternion(q);
 }
 
 
-int StartTrackingDataMessage::GetBodyPackSize()
+void TrackingDataElement::GetQuaternion(float* qx, float* qy, float* qz, float* w)
 {
-  return IGTL_STT_TDATA_SIZE;
+  float q[4];
+
+  igtl::MatrixToQuaternion(m_Matrix, q);
+  *qx = q[0];
+  *qy = q[1];
+  *qz = q[2];
+  *w  = q[3];
 }
 
 
-int StartTrackingDataMessage::PackBody()
+void TrackingDataElement::Identity()
 {
-  AllocatePack();
-
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
-
-  stt_tdata->resolution = this->m_Resolution;
-  strncpy(stt_tdata->coord_name, this->m_CoordinateName.c_str(), IGTL_STT_TDATA_LEN_COORDNAME);
-
-  igtl_stt_tdata_convert_byte_order(stt_tdata);
-
-  return 1;
-  
+  IdentityMatrix(this->m_Matrix);
 }
-
-
-int StartTrackingDataMessage::UnpackBody()
-{
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
-  
-  igtl_stt_tdata_convert_byte_order(stt_tdata);
-
-  this->m_Resolution = stt_tdata->resolution;
-
-  char strbuf[IGTL_STT_TDATA_LEN_COORDNAME+1];
-  strbuf[IGTL_STT_TDATA_LEN_COORDNAME] = '\n';
-  strncpy(strbuf, stt_tdata->coord_name, IGTL_STT_TDATA_LEN_COORDNAME);
-
-  this->SetCoordinateName(strbuf);
-
-  return 1;
-
-}
-
-
-//----------------------------------------------------------------------
-// igtl::RTSTrackingDataMessage class
-
-int  RTSTrackingDataMessage::GetBodyPackSize()
-{ 
-  return IGTL_RTS_TDATA_SIZE; 
-}
-
-int  RTSTrackingDataMessage::PackBody()
-{
-  AllocatePack(); 
-
-  igtl_rts_tdata* rts_tdata = (igtl_rts_tdata*)this->m_Body;
-
-  rts_tdata->status = this->m_Status;
-
-  igtl_rts_tdata_convert_byte_order(rts_tdata);
-
-  return 1; 
-}
-
-
-int  RTSTrackingDataMessage::UnpackBody()
-{ 
-  igtl_rts_tdata* rts_tdata = (igtl_rts_tdata*)this->m_Body;
-  
-  igtl_rts_tdata_convert_byte_order(rts_tdata);
-
-  this->m_Status= rts_tdata->status;
-
-  return 1; 
-}
-
 
 
 //----------------------------------------------------------------------
 // igtl::TrackingDataMessage class
 
-TrackingDataMessage::TrackingDataMessage():
-  MessageBase()
-{
-  this->m_DefaultBodyType = "TDATA";
-  this->m_TrackingDataList.clear();
-}
-
-
-TrackingDataMessage::~TrackingDataMessage()
-{
-}
-
 
 int TrackingDataMessage::AddTrackingDataElement(TrackingDataElement::Pointer& elem)
 {
-  this->m_TrackingDataList.push_back(elem);
-  return this->m_TrackingDataList.size();
+  return this->AddTrackingDataElementBase(elem); 
 }
-
+  
 
 void TrackingDataMessage::ClearTrackingDataElements()
 {
-  this->m_TrackingDataList.clear();
+  this->ClearTrackingDataElementBase(); 
 }
-
+  
 
 int TrackingDataMessage::GetNumberOfTrackingDataElements()
-{
-  return this->m_TrackingDataList.size();
+{ 
+  return this->GetNumberOfTrackingDataElementBase(); 
 }
 
-
+  
 void TrackingDataMessage::GetTrackingDataElement(int index, TrackingDataElement::Pointer& elem)
-{
-  if (index >= 0 && index < (int)this->m_TrackingDataList.size())
-    {
-    elem = this->m_TrackingDataList[index];
-    }
+{ 
+  elem = dynamic_cast<TrackingDataElement*>(this->GetTrackingDataElementBase(index));
 }
 
 
@@ -319,7 +208,7 @@ int TrackingDataMessage::PackBody()
   
   igtl_tdata_element* element;
   element = (igtl_tdata_element*)this->m_Body;
-  std::vector<TrackingDataElement::Pointer>::iterator iter;
+  std::vector<TrackingDataElementBase::Pointer>::iterator iter;
 
   for (iter = this->m_TrackingDataList.begin(); iter != this->m_TrackingDataList.end(); iter ++)
     {
@@ -377,7 +266,7 @@ int TrackingDataMessage::UnpackBody()
       }
     elemClass->SetMatrix(matrix);
 
-    this->m_TrackingDataList.push_back(elemClass);
+    this->m_TrackingDataList.push_back(dynamic_cast<TrackingDataElement *>(elemClass.GetPointer()));
 
     element ++;
     }

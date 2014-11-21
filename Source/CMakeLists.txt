@@ -127,6 +127,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlLabelMetaMessage.cxx
     igtlPointMessage.cxx
     igtlTrackingDataMessage.cxx
+    igtlTrackingDataMessageBase.cxx
     igtlPolyDataMessage.cxx
     igtlQuaternionTrackingDataMessage.cxx
     igtlTrajectoryMessage.cxx
@@ -158,6 +159,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlLabelMetaMessage.h
     igtlPointMessage.h
     igtlTrackingDataMessage.h
+    igtlTrackingDataMessageBase.h
     igtlPolyDataMessage.h
     igtlQuaternionTrackingDataMessage.h
     igtlTrajectoryMessage.h
