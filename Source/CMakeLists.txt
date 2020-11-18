@@ -285,3 +285,40 @@ INSTALL(TARGETS OpenIGTLink EXPORT OpenIGTLink
   RUNTIME DESTINATION ${OpenIGTLink_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries
   LIBRARY DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT Development)
+
+  
+#-----------------------------------------------------------------------------
+# SWIG for Python
+# MAYBE TRY igtlutil/sfijds.c, but problem is cxx files not finding util, perhaps use a define or otherwise to use a different #include instead
+# JUST USE $OpenIGTLink_sources instead
+
+IF(USE_SWIG_PYTHON)
+  find_package(SWIG REQUIRED)
+  
+  include(${SWIG_USE_FILE})
+
+  find_package(PythonLibs REQUIRED)
+  
+  include_directories(${PYTHON_INCLUDE_PATH})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/igtlutil)
+  include_directories(${CMAKE_CURRENT_BINARY_DIR}/igtlutil)
+  include_directories(${OpenIGTLink_BINARY_DIR})
+    
+  #foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)
+  #  swig_target_include_directories(OpenIGTLink PUBLIC $<BUILD_INTERFACE:${p}>)
+  #endforeach()
+  #swig_target_include_directories(OpenIGTLink PUBLIC $<INSTALL_INTERFACE:${OpenIGTLink_INSTALL_INCLUDE_DIR}>)
+  
+  set(CMAKE SWIG OUTDIR {root})
+  
+  set(CMAKE_SWIG_FLAGS "")
+  
+  set_source_files_properties(swig/OpenIGTLink.i PROPERTIES CPLUSPLUS ON)
+  set_source_files_properties(swig/OpenIGTLink.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
+  
+  swig_add_library(OpenIGTLink LANGUAGE python TYPE MODULE SOURCES swig/OpenIGTLink.i ${OpenIGTLink_SOURCES})
+  
+  swig_link_libraries(OpenIGTLink ${PYTHON_LIBRARIES})
+ENDIF()
+

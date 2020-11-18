@@ -40,6 +40,10 @@ OPTION(OpenIGTLink_USE_AV1 "Link the AV1 tree." OFF)
 OPTION(OpenIGTLink_USE_WEBSOCKET "Build the Websocket." OFF)
 
 #-----------------------------------------------------------------------------
+# Configure SWIG for Python
+OPTION(USE_SWIG_PYTHON "Use SWIG for Python wrapping." ON)
+
+#-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
 OPTION(BUILD_SHARED_LIBS "Build OpenIGTLink with shared libraries." OFF)
 SET(OpenIGTLink_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
