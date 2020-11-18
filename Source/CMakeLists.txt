@@ -314,10 +314,10 @@ IF(USE_SWIG_PYTHON)
   
   set(CMAKE_SWIG_FLAGS "")
   
-  set_source_files_properties(swig/OpenIGTLink.i PROPERTIES CPLUSPLUS ON)
-  set_source_files_properties(swig/OpenIGTLink.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
+  set_source_files_properties(Swig/OpenIGTLink.i PROPERTIES CPLUSPLUS ON)
+  set_source_files_properties(Swig/OpenIGTLink.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
   
-  swig_add_library(OpenIGTLink LANGUAGE python TYPE MODULE SOURCES swig/OpenIGTLink.i ${OpenIGTLink_SOURCES})
+  swig_add_library(OpenIGTLink LANGUAGE python TYPE MODULE SOURCES Swig/OpenIGTLink.i ${OpenIGTLink_SOURCES})
   
   swig_link_libraries(OpenIGTLink ${PYTHON_LIBRARIES})
 ENDIF()

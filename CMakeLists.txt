@@ -41,7 +41,7 @@ OPTION(OpenIGTLink_USE_WEBSOCKET "Build the Websocket." OFF)
 
 #-----------------------------------------------------------------------------
 # Configure SWIG for Python
-OPTION(USE_SWIG_PYTHON "Use SWIG for Python wrapping." ON)
+OPTION(USE_SWIG_PYTHON "Use SWIG for Python wrapping." OFF)
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
