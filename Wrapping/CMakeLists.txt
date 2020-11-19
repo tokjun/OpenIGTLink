@@ -24,7 +24,7 @@ swig_link_libraries(openigtlink ${PYTHON_LIBRARIES} OpenIGTLink)
 # Files to install with Python
 set(PYTHON_INSTALL_FILES
   ${CMAKE_CURRENT_BINARY_DIR}/openigtlink.py
-  ${CMAKE_CURRENT_BINARY_DIR}/_openigtlink.so)
+  ${OpenIGTLink_BINARY_DIR}/bin/_openigtlink.so)
 
 # Configure setup.py and copy to output directory
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/Python/setup.py.in)
@@ -35,3 +35,7 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 add_custom_target(install-python
         DEPENDS _openigtlink
         COMMAND python ${SETUP_PY_OUT} install)
+      
+add_custom_target(install-python3
+        DEPENDS _openigtlink
+        COMMAND python3 ${SETUP_PY_OUT} install)
