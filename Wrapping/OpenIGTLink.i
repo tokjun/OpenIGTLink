@@ -2,12 +2,12 @@
 %include <windows.i>
 %include "std_string.i"
 
+
 %begin %{
 #ifdef _MSC_VER
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
 #endif
 %}
-
 
 #define IGTLCommon_EXPORT __declspec(dllexport)
 #define IGTL_EXPORT __declspec(dllexport)
@@ -55,6 +55,10 @@
 #include "igtlCommandMessage.h"
 %}
 
+%include "carrays.i"
+%array_class(float, floatArray);
+%array_class(int, intArray);
+
 %include "igtlMacro.h"
 
 %import "igtlSmartPointer.h"
@@ -62,7 +66,6 @@
 %import "igtlObjectFactory.h"
 %import "igtlMessageHeader.h"
 %import "igtlMessageBase.h"
-
 %import "igtlLightObject.h"
 %import "igtlMessageFactory.h"
 
