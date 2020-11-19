@@ -310,3 +310,12 @@ ENDIF()
 IF(OpenIGTLink_BUILD_DOCUMENTATION)
   ADD_SUBDIRECTORY(Documents/Doxygen)
 ENDIF()
+
+  
+#-----------------------------------------------------------------------------
+# SWIG for Python
+
+IF(USE_SWIG_PYTHON)
+  ADD_SUBDIRECTORY(Wrapping)
+ENDIF()
+

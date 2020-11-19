@@ -1,4 +1,4 @@
-%module OpenIGTLink
+%module openigtlink
 %include <windows.i>
 %include "std_string.i"
 

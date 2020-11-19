@@ -286,12 +286,4 @@ INSTALL(TARGETS OpenIGTLink EXPORT OpenIGTLink
   LIBRARY DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT Development)
 
-  
-#-----------------------------------------------------------------------------
-# SWIG for Python
-
-IF(USE_SWIG_PYTHON)
-  ADD_SUBDIRECTORY(Swig)
-ENDIF()
-
 
