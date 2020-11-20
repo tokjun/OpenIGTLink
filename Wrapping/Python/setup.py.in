@@ -25,9 +25,9 @@ class CompiledLibInstall(setuptools.command.install.install):
 if __name__ == '__main__':
     setuptools.setup(
         name='openigtlink',
-        version='1.0.0-dev',
+        version='1.0.0.dev0',
         packages=['openigtlink'],
-        license='Apache License 2.0',
+        license='BSD 3-Lause License',
         author='Junichi Tokuda',
         author_email='tokuda@bwh.harvard.edu',
         cmdclass={'install': CompiledLibInstall}

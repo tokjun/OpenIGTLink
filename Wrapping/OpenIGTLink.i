@@ -9,15 +9,11 @@
 #endif
 %}
 
-#define IGTLCommon_EXPORT __declspec(dllexport)
-#define IGTL_EXPORT __declspec(dllexport)
-
 %{
 #define SWIG_FILE_WITH_INIT
 
 #pragma comment(lib, "Ws2_32.lib")
 #include "igtlWin32Header.h"
-
 #include "igtlUnit.h"
 #include "igtlMath.h"
 #include "igtlTypes.h"
@@ -51,15 +47,19 @@
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
 #include "igtlTrajectoryMessage.h"
-  //#include "igtlQueryMessage.h"
+//#include "igtlQueryMessage.h"
 #include "igtlCommandMessage.h"
 %}
 
+// Define array typesf
 %include "carrays.i"
 %array_class(float, floatArray);
 %array_class(int, intArray);
 
+
+// Common header files
 %include "igtlMacro.h"
+%include "igtlWin32Header.h"
 
 %import "igtlSmartPointer.h"
 %import "igtlObject.h"
@@ -70,6 +70,7 @@
 %import "igtlMessageFactory.h"
 
 // Socket
+
 %template(SocketPointer) igtl::SmartPointer<igtl::Socket>;
 %template(ClientSocketPointer) igtl::SmartPointer<igtl::ClientSocket>;
 %template(ServerSocketPointer) igtl::SmartPointer<igtl::ServerSocket>;
@@ -148,7 +149,7 @@
 %template(TrajectoryElementPointer) igtl::SmartPointer<igtl::TrajectoryElement>;
 
 // QueryMessage
-// TODO: Adding QueryMessage causes ImportError
+// TODO: QueryMessage is commented out for now because it causes ImportError
 //%template(QueryMessagePointer) igtl::SmartPointer<igtl::QueryMessage>;
 
 // CommandMessage
@@ -156,6 +157,8 @@
 %template(RTSCommandMessagePointer) igtl::SmartPointer<igtl::RTSCommandMessage>;
 
 //// Classes to be wrapped:
+%include "igtlLightObject.h"
+%include "igtlObject.h"
 %include "igtlTimeStamp.h"
 %include "igtlUnit.h"
 %include "igtlMath.h"
