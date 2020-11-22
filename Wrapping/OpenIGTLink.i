@@ -2,6 +2,42 @@
 %include <windows.i>
 %include "std_string.i"
 
+// Define array typesf
+%include "carrays.i"
+
+%array_class(float, floatArray);
+%array_class(int, intArray);
+%array_class(char, charArray);
+
+%{
+  #include <cstring>
+
+  // Copy a byte array from a Python Bytes object to a C++ void* pointer.
+  // Note that the first two parameters are 'typemaped' (see %typemap(in) below)
+  // From a python script, the fuction is called as:
+  //
+  // >>> openigtlink.copyBytesToPointer(im, ptr)
+  //
+  void copyBytesToPointer(char* bytes, int array_length, void* dst_ptr) {
+    std::memcpy(dst_ptr, bytes, array_length);
+  }
+
+  void* offsetPointer(void* ptr, int offset) {
+    char * ptrc = (char*) ptr;
+    return (void*) (ptrc + offset);
+  }
+  
+%}
+
+%typemap(in) (char *bytes, int array_length) {
+    Py_ssize_t len;
+    PyBytes_AsStringAndSize($input, &$1, &len);
+    $2 = (int)len;
+}
+
+void copyBytesToPointer(char* bytes, int array_length, void* dst_ptr);
+void* offsetPointer(void* ptr, int offset);
+
 
 %begin %{
 #ifdef _MSC_VER
@@ -51,12 +87,6 @@
 #include "igtlCommandMessage.h"
 %}
 
-// Define array typesf
-%include "carrays.i"
-%array_class(float, floatArray);
-%array_class(int, intArray);
-
-
 // Common header files
 %include "igtlMacro.h"
 %include "igtlWin32Header.h"
@@ -64,16 +94,17 @@
 %import "igtlSmartPointer.h"
 %import "igtlObject.h"
 %import "igtlObjectFactory.h"
-%import "igtlMessageHeader.h"
-%import "igtlMessageBase.h"
 %import "igtlLightObject.h"
 %import "igtlMessageFactory.h"
 
 // Socket
-
 %template(SocketPointer) igtl::SmartPointer<igtl::Socket>;
 %template(ClientSocketPointer) igtl::SmartPointer<igtl::ClientSocket>;
 %template(ServerSocketPointer) igtl::SmartPointer<igtl::ServerSocket>;
+
+// // Message Base
+%template(MessageHeaderPointer) igtl::SmartPointer<igtl::MessageHeader>;
+%template(MessageBasePointer) igtl::SmartPointer<igtl::MessageBase>;
 
 // CapabilityMessage
 %template(CapabilityMessagePointer) igtl::SmartPointer<igtl::CapabilityMessage>;
