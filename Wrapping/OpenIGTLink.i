@@ -16,24 +16,79 @@
   // Note that the first two parameters are 'typemaped' (see %typemap(in) below)
   // From a python script, the fuction is called as:
   //
-  // >>> openigtlink.copyBytesToPointer(im, ptr)
+  // >>> import openigtlink as igtl
+  // >>> igtl.copyBytesToPointer(im, ptr)
   //
   void copyBytesToPointer(char* bytes, int array_length, void* dst_ptr) {
     std::memcpy(dst_ptr, bytes, array_length);
   }
 
+  // This utility function allows to offset the given pointer.
+  // Example: The following code copies pixels from array of images slice by slice.
+  //
+  // >>> import openigtlink as igtl
+  // >>> offset = 0
+  // >>> for i in range(nSlices):
+  // >>>   igtl.copyBytesToPointer(image[i], igtl.offsetPointer(imageMsg.GetScalarPointer(), offset))
+  // >>>   offset = offset + len(image[i])
+  //
   void* offsetPointer(void* ptr, int offset) {
     char * ptrc = (char*) ptr;
     return (void*) (ptrc + offset);
   }
-  
 %}
 
+
+// Typemap for copyBytesToPointer()
 %typemap(in) (char *bytes, int array_length) {
-    Py_ssize_t len;
-    PyBytes_AsStringAndSize($input, &$1, &len);
-    $2 = (int)len;
+  Py_ssize_t len;
+  PyBytes_AsStringAndSize($input, &$1, &len);
+  $2 = (int)len;
 }
+
+
+// Covert from Python flaot[][] to C++ igtl::Matrix4x4 &
+// Functions that take an igtl::Matrix4x4 reference can be directly called with a 2D Python array.
+
+%typemap(in) igtl::Matrix4x4 & {
+
+  igtl::Matrix4x4 temp;
+  
+  int i,j;
+  if (!PySequence_Check($input)) {
+    PyErr_SetString(PyExc_ValueError,"Expected a sequence");
+    return NULL;
+  }
+  if (PySequence_Length($input) != 4) {
+    PyErr_SetString(PyExc_ValueError,"Size mismatch. Expected 4 elements");
+    return NULL;
+  }
+
+  for (i = 0; i < 4; i++) {
+    PyObject *olist = PySequence_GetItem($input,i);
+    if (!PySequence_Check(olist)) {
+      PyErr_SetString(PyExc_ValueError,"Expected a sequence");
+      return NULL;
+    }
+    if (PySequence_Length(olist) != 4) {
+      PyErr_SetString(PyExc_ValueError,"Size mismatch. Expected 4 elements");
+      return NULL;
+    }
+
+    for (j = 0; j < 4; j++) {
+      PyObject *o = PySequence_GetItem(olist,j);
+      if (PyNumber_Check(o)) {
+        temp[i][j] = (float) PyFloat_AsDouble(o);
+      } else {
+        PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
+        return NULL;
+      }
+    }
+  }
+
+  $1 = &temp;
+}
+
 
 void copyBytesToPointer(char* bytes, int array_length, void* dst_ptr);
 void* offsetPointer(void* ptr, int offset);

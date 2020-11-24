@@ -35,3 +35,71 @@ import openigtlink
 ~~~~
 
 
+Examples
+========
+
+The following code pushes a linear transformation matrix to an OpenIGTLink server:
+
+~~~~
+import openigtlink as igtl
+
+transMsg = igtl.TransformMessage.New()
+transMsg.SetDeviceName("Tracker")
+
+# Create a 2D array
+trans = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
+
+# Change X, Y, and Z coordinates
+trans[0][3] = 10.0
+trans[1][3] = 20.0
+trans[2][3] = 30.0
+
+transMsg.Pack();
+
+c = igtl.ClientSocket.New()
+c.ConnectToServer('localhost', 18944)
+c.Send(transMsg.GetPackPointer(), transMsg.GetPackSize())
+c.CloseSocket()
+~~~~
+
+The following code pushes a pixel patter to the server:
+
+~~~~
+import openigtlink as igtl
+
+imageMsg = igtl.ImageMessage.New()
+imageMsg.SetDimensions(64, 64, 1)
+imageMsg.SetSpacing(1.0, 1.0, 5)
+imageMsg.SetScalarTypeToInt8()
+imageMsg.SetDeviceName('Test2')
+imageMsg.SetNumComponents(1)
+imageMsg.SetEndian(2)
+imageMsg.AllocateScalars()
+
+# Generate a 64x64 pixel matrix
+b = [0.0] * 64*64
+for i in range(64*64):
+    b[i] = i % 256
+
+im = bytes(b)
+
+# Copy the pixel matrix to the imageMsg
+igtl.copyBytesToPointer(im, igtl.offsetPointer(imageMsg.GetScalarPointer(), 0))
+
+# Create a transform as a 2D array
+trans = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
+
+trans[0][3] = 10.0
+trans[1][3] = 20.0
+trans[2][3] = 30.0
+
+imageMsg.SetMatrix(trans)
+
+imageMsg.Pack()
+
+c = igtl.ClientSocket.New()
+c.ConnectToServer('localhost', 18944)
+c.Send(imageMsg.GetPackPointer(), imageMsg.GetPackSize())
+c.CloseSocket()
+~~~~
+
