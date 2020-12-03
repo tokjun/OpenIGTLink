@@ -103,3 +103,16 @@ c.Send(imageMsg.GetPackPointer(), imageMsg.GetPackSize())
 c.CloseSocket()
 ~~~~
 
+Please note that Python wrappered functions cannot return values using a 2D array referenced as an argument.
+Instead, those functions return a 2D array. However, the functions still require a reference to a 2D array,
+and the user must prepare a dummy array to call it. For example:
+
+~~~~
+dummy = [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
+a = transMsg.GetMatrix(dummy)
+~~~~
+
+
+
+
+

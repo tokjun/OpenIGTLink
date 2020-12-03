@@ -50,9 +50,9 @@
 // Covert from Python flaot[][] to C++ igtl::Matrix4x4 &
 // Functions that take an igtl::Matrix4x4 reference can be directly called with a 2D Python array.
 
-%typemap(in) igtl::Matrix4x4 & {
+%typemap(in) igtl::Matrix4x4 & (igtl::Matrix4x4 temp) {
 
-  igtl::Matrix4x4 temp;
+  //igtl::Matrix4x4 temp;
   
   int i,j;
   if (!PySequence_Check($input)) {
@@ -88,6 +88,34 @@
 
   $1 = &temp;
 }
+
+
+// Currently GetMatrix(igtl::Matrix4x4&) functions requires a dummy argument in Python.
+// This could be solved by using a specific argument name in the C++ code. 
+//
+//%typemap(in,numinputs=0) igtl::Matrix4x4 & (igtl::Matrix4x4 temp) {
+//  $1 = &temp;
+//}
+//
+
+%typemap(argout) igtl::Matrix4x4 & {
+
+  int i,j;
+  PyObject *mat = PyList_New(4);
+
+  for (i = 0; i < 4; i++) {
+    PyObject *row = PyList_New(4);
+
+    for (j = 0; j < 4; j++) {
+      PyObject *item = PyFloat_FromDouble((double)temp$argnum[i][j]);
+      PyList_SetItem(row, j, item);
+    }
+    PyList_SetItem(mat, i, row);
+  }
+  //PyList_Append($result, mat);
+  $result = mat;
+}
+
 
 
 void copyBytesToPointer(char* bytes, int array_length, void* dst_ptr);
